@@ -6,7 +6,7 @@ app.use(express.json())
 
 // routes
 const customerRoute = require('./routes/customer');
-const orderROute = require('./routes/orders')
+const orderRoute = require('./routes/orders')
 
 app.use('/customer', customerRoute);
 
