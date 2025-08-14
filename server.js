@@ -12,6 +12,9 @@ app.use(cors())
 const customerRoute = require('./routes/customer');
 const orderRoute = require('./routes/ordersRoute')
 
+//static routes
+app.use(express.static(path.join(__dirname, 'views')))
+
 app.use('/customer', customerRoute);
 app.use('/products', require('./routes/product'));
 
