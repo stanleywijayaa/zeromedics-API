@@ -16,17 +16,17 @@ router.post('/', async(req,res) => {
 router.get('/all', async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const perPage = parseInt(req.query.per_page) || 25;
+        const perPage = parseInt(req.query.per_page) || 20;
 
         const { customers, total, totalPages } = await getAllCustomers(page, perPage);
 
-        res.send({
+        res.json({
             customers,
             total,
             totalPages
         });
     } catch (error) {
-        console.error(error);
+        console.error("Error in /customer/all route:", error);
         res.status(500).json({ error: 'Failed to fetch customers' });
     }
 });

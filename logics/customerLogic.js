@@ -21,7 +21,7 @@ const createCustomer = async (data) => {
 }
 
 // retrieve all customers
-const getAllCustomers = async (page = 1, perPage = 25) => {
+const getAllCustomers = async (page = 1, perPage = 20) => {
     try {
         const response = await api.get(`customers?per_page=${perPage}&page=${page}`);
 

@@ -1,15 +1,16 @@
 let currentPage = 1;
 let totalPages = 1;
-const rowsPerPage = 25;
+const rowsPerPage = 20;
 
 window.onload = function () {
     fetchCustomers(currentPage);
 };
 
+// Search form
 document.getElementById('customerForm').addEventListener('submit', async function (e) {
     e.preventDefault();
-    const email = document.getElementById('email').value;
-    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value.trim();
+    const username = document.getElementById('username').value.trim();
 
     const response = await fetch(`http://localhost:3000/customer/get`, {
         method: 'POST',
@@ -19,9 +20,10 @@ document.getElementById('customerForm').addEventListener('submit', async functio
 
     const data = await response.json();
     renderTable(Array.isArray(data) ? data : []);
-    document.getElementById('pagination').style.display = 'none';
+    document.getElementById('pagination').style.display = 'none'; // Hide pagination when searching
 });
 
+// Show All button
 document.getElementById('showAllBtn').addEventListener('click', function () {
     document.getElementById('email').value = '';
     document.getElementById('username').value = '';
@@ -29,16 +31,21 @@ document.getElementById('showAllBtn').addEventListener('click', function () {
     fetchCustomers(currentPage);
 });
 
+// Fetch customers from backend (server-side pagination)
 async function fetchCustomers(page) {
-    const response = await fetch(`http://localhost:3000/customer/all?page=${page}&per_page=${rowsPerPage}`);
-    const data = await response.json();
+    try {
+        const response = await fetch(`http://localhost:3000/customer/all?page=${page}&per_page=${rowsPerPage}`);
+        const data = await response.json();
 
-    // Assuming backend returns { customers: [], total: number }
-    renderTable(data.customers);
-    totalPages = data.totalPages;
-    updatePagination();
+        renderTable(data.customers);
+        totalPages = data.totalPages;
+        updatePagination();
+    } catch (err) {
+        console.error("Failed to fetch customers:", err);
+    }
 }
 
+// Render table rows
 function renderTable(customers) {
     const tbody = document.getElementById('customerTable').getElementsByTagName('tbody')[0];
     tbody.innerHTML = '';
@@ -60,6 +67,7 @@ function renderTable(customers) {
     });
 }
 
+// Update pagination controls
 function updatePagination() {
     document.getElementById('pageInfo').innerText = `Page ${currentPage} of ${totalPages}`;
     document.getElementById('prevPage').disabled = currentPage === 1;
@@ -67,6 +75,7 @@ function updatePagination() {
     document.getElementById('pagination').style.display = totalPages > 1 ? 'block' : 'none';
 }
 
+// Pagination buttons
 document.getElementById('prevPage').addEventListener('click', function () {
     if (currentPage > 1) {
         currentPage--;
