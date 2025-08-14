@@ -15,8 +15,8 @@ const orderRoute = require('./routes/ordersRoute')
 app.use('/customer', customerRoute);
 app.use('/products', require('./routes/product'));
 
-app.use('/orders', orderRoute);
-
+//Orders routing
+app.use('/search/orders', orderRoute);
 app.get('/orders', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'SearchOrders.html'));
 });

@@ -33,6 +33,8 @@
         <input type="submit" value="Search Order">
     </form>
 
+    <br>
+
     <div id="results"></div>
 
     <script>
@@ -49,23 +51,29 @@
             const query = document.getElementById("query").value.trim();
             if (query) {
                 // Change URL without reloading
-                window.history.pushState({}, "", `/orders/search?query=${encodeURIComponent(query)}`);
+                window.history.pushState({}, "", `/orders?query=${encodeURIComponent(query)}`);
                 fetchOrders(query);
             }
             else{
-                window.history.pushState({}, "", `/orders/search`);
                 fetchOrders(query);
             }
         });
 
         async function fetchOrders(query) {
+            let fetchUrl = `/search/orders?query=${encodeURIComponent(query)}`
+            if (!query){
+                fetchUrl = `/search/orders/all`
+            }
             const resultsDiv = document.getElementById("results");
             resultsDiv.innerHTML = "Searching...";
 
             try {
-                const res = await fetch(`/orders/search?query=${encodeURIComponent(query)}`);
-                console.log(await res.text())
-                if (!res.ok) throw new Error("No orders found");
+                const res = await fetch(fetchUrl);
+
+                if (!res.ok || !res) {
+                    resultsDiv.innerHTML = "No order found";
+                    return;
+                }
 
                 const data = await res.json();
                 resultsDiv.innerHTML = "";
@@ -74,12 +82,15 @@
                     const card = document.createElement("div");
                     card.className = "card";
                     card.innerHTML = `
-                        <h3>Order ID: ${order.orderId}</h3>
-                        <p><strong>Customer:</strong> ${order.username}</p>
-                        <p><strong>Email:</strong> ${order.email}</p>
+                        <h3>Order ID: ${order.id}</h3>
+                        <p><strong>Customer:</strong> ${order.billing.first_name + ' ' + order.billing.last_name}</p>
+                        <p><strong>Email:</strong> ${order.billing.email}</p>
                         <p><strong>Items:</strong></p>
                         <ul class="items">
-                            ${order.items.map(item => `<li>${item}</li>`).join("")}
+                            ${order.line_items.forEach(item => {
+                                
+                            })}
+                            ${order.line_items.map(item => `<li>${item}</li>`).join("")}
                         </ul>
                     `;
                     resultsDiv.appendChild(card);
