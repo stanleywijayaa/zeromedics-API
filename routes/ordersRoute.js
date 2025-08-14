@@ -2,6 +2,7 @@ const express = require('express');
 const { getOrder, getAllOrder } = require('../logics/orderLogic');
 const router = express.Router()
 
+//Search order route
 router.get('/', async (req, res) => {
     const { query } = req.query
     try {
@@ -14,6 +15,7 @@ router.get('/', async (req, res) => {
     }
 });
 
+//Get all orders route
 router.get('/all', async (req,res) => {
     try{
         console.log('getting all orders')
