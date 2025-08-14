@@ -8,6 +8,9 @@
     <form id="searchForm" method="GET">
         <label for="query">Search:</label>
         <input type="text" id="query" name="query">
+        <br>
+        <label for="query">Results per page:</label>
+        <input type="number" id="per_page" name="per_page" placeholder="10">
         <br><br>
         <input type="submit" value="Search Order">
     </form>
@@ -15,6 +18,7 @@
     <br>
 
     <div id="results"></div>
+    <div id="pagination" class="pagination"></div>
 
     <script src="/scripts/searchOrders.js"></script>
 </body>

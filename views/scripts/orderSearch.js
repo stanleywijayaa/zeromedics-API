@@ -1,6 +1,8 @@
 // Read URL param if present
 const urlParams = new URLSearchParams(window.location.search);
 const queryParam = urlParams.get("query");
+
+//Directly fetch data when there is query in the url
 if (queryParam) {
     document.getElementById("query").value = queryParam;
     fetchOrders(queryParam);
