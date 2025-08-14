@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Products</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0f17; --card:#121826; --muted:#6b7280; --text:#e5e7eb; --accent:#60a5fa; --border:#1f2937; --ok:#22c55e; --warn:#f59e0b; --err:#ef4444;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(120deg,#0b0f17,#0f172a);color:var(--text)}
+    header{position:sticky;top:0;z-index:50;background:rgba(10,14,24,.8);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+    .container{max-width:1100px;margin:0 auto;padding:18px}
+    h1{font-size:22px;margin:0;font-weight:700;letter-spacing:.3px}
+    .toolbar{display:grid;grid-template-columns:1fr auto;gap:12px;margin-top:14px}
+    .controls{display:flex;gap:10px;flex-wrap:wrap}
+    input,select,button{background:#0e1524;color:var(--text);border:1px solid var(--border);padding:10px 12px;border-radius:12px;font-size:14px}
+    input::placeholder{color:#94a3b8}
+    button{cursor:pointer;font-weight:600}
+    button.primary{background:var(--accent);border-color:transparent;color:#0b1020}
+    main{padding:22px 0}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:transform .15s ease,box-shadow .15s ease}
+    .card:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.25)}
+    .thumb{aspect-ratio:4/3;background:#0b1220;display:grid;place-items:center}
+    .thumb img{width:100%;height:100%;object-fit:cover}
+    .content{padding:14px}
+    .title{font-size:15px;font-weight:600;line-height:1.3;margin:0 0 8px}
+    .price{font-weight:700}
+    .muted{color:var(--muted);font-size:12px}
+    .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .pill{padding:4px 8px;border-radius:999px;font-size:12px;border:1px solid var(--border)}
+    .pill.ok{color:#10b981;border-color:#065f46;background:rgba(16,185,129,.08)}
+    .pill.out{color:#fca5a5;border-color:#7f1d1d;background:rgba(239,68,68,.08)}
+    .empty{opacity:.8;text-align:center;padding:40px;border:1px dashed var(--border);border-radius:16px}
+    footer{display:flex;justify-content:center;gap:8px;padding:16px 0 30px}
+    .pager button{padding:8px 12px;border-radius:10px}
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border-radius:9999px;background:#0e1524;border:1px solid var(--border);font-size:12px}
+    .id-search{display:flex;gap:8px}
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;border:1px solid var(--border);background:#0c1220;padding:2px 6px;border-radius:6px;color:#cbd5e1;font-size:12px}
+    a, a:visited{color:var(--accent)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="row" style="margin-bottom:8px">
+        <h1>WooCommerce Products</h1>
+        <span class="badge" id="status">Disconnected</span>
+      </div>
+      <div class="toolbar">
+        <div class="controls">
+          <input id="baseUrl" placeholder="http://localhost:3000/products" style="min-width:290px" />
+          <select id="perPage">
+            <option value="12">12 / page</option>
+            <option value="24">24 / page</option>
+            <option value="48">48 / page</option>
+          </select>
+          <input id="search" placeholder="Filter by name… (client-side)" />
+          <select id="sort">
+            <option value="name-asc">Name ↑</option>
+            <option value="name-desc">Name ↓</option>
+            <option value="price-asc">Price ↑</option>
+            <option value="price-desc">Price ↓</option>
+          </select>
+          <button class="primary" id="load">Load</button>
+        </div>
+        <div class="id-search">
+          <input id="singleId" placeholder="Product ID" />
+          <button id="fetchById">Get by ID</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="grid" class="grid" aria-live="polite"></div>
+    <div id="empty" class="empty" style="display:none">No products found.</div>
+  </main>
+
+  <footer>
+    <div class="pager"> 
+      <button id="prev">Prev</button>
+      <span class="badge"><span id="page">1</span></span>
+      <button id="next">Next</button>
+    </div>
+  </footer>
+
+  <template id="card-tpl">
+    <article class="card">
+      <div class="thumb"></div>
+      <div class="content">
+        <h3 class="title"></h3>
+        <div class="row" style="margin:6px 0 10px">
+          <span class="price"></span>
+          <span class="pill"></span>
+        </div>
+        <div class="muted sku"></div>
+      </div>
+    </article>
+  </template>
+
+  <script>
+    // ---- Configuration ----
+    // This page expects you have a backend that exposes:
+    //   GET {BASE_URL}/products?per_page=&page=    -> list products (proxy to WooCommerce)
+    //   GET {BASE_URL}/products/:id               -> single product by ID
+    // Replace defaultBaseUrl if your Express server is different.
+    const defaultBaseUrl = '';
+
+    // ---- State ----
+    let BASE_URL = defaultBaseUrl;
+    let page = 1;
+    let perPage = 12;
+    let lastFetched = [];
+
+    // ---- Elements ----
+    const els = {
+      baseUrl: document.getElementById('baseUrl'),
+      perPage: document.getElementById('perPage'),
+      search: document.getElementById('search'),
+      sort: document.getElementById('sort'),
+      load: document.getElementById('load'),
+      grid: document.getElementById('grid'),
+      empty: document.getElementById('empty'),
+      status: document.getElementById('status'),
+      prev: document.getElementById('prev'),
+      next: document.getElementById('next'),
+      page: document.getElementById('page'),
+      singleId: document.getElementById('singleId'),
+      fetchById: document.getElementById('fetchById'),
+      tpl: document.getElementById('card-tpl')
+    };
+
+    // Restore BASE_URL from localStorage for convenience
+    els.baseUrl.value = localStorage.getItem('wc_base_url') || defaultBaseUrl;
+
+    // ---- Helpers ----
+    const fmtPrice = (product) => {
+      // WooCommerce returns price/regular_price/sale_price as strings
+      const currency = product?.currency || '';
+      const price = product.price ?? product.regular_price ?? '';
+      if (!price) return '—';
+      return `${currency ? currency + ' ' : ''}${Number(price).toLocaleString()}`;
+    };
+
+    const stockPill = (p) => {
+      const pill = document.createElement('span');
+      pill.className = 'pill ' + (p.stock_status === 'instock' ? 'ok' : 'out');
+      pill.textContent = p.stock_status === 'instock' ? 'In stock' : 'Out of stock';
+      return pill;
+    };
+
+    const productImage = (p) => {
+      const url = p?.images?.[0]?.src || '';
+      const wrap = document.createElement('div');
+      wrap.className = 'thumb';
+      if (url) {
+        const img = document.createElement('img');
+        img.loading = 'lazy';
+        img.alt = p.name || 'Product image';
+        img.src = url;
+        wrap.appendChild(img);
+      } else {
+        wrap.innerHTML = '<div class="muted">No image</div>';
+      }
+      return wrap;
+    };
+
+    function render(products){
+      els.grid.innerHTML = '';
+      const list = products || [];
+      if (!list.length){ els.empty.style.display = 'block'; return; }
+      els.empty.style.display = 'none';
+      for (const p of list){
+        const node = els.tpl.content.firstElementChild.cloneNode(true);
+        node.querySelector('.thumb').replaceWith(productImage(p));
+        node.querySelector('.title').textContent = p.name || 'Untitled product';
+        node.querySelector('.price').textContent = fmtPrice(p);
+        node.querySelector('.pill').replaceWith(stockPill(p));
+        node.querySelector('.sku').textContent = p.sku ? `SKU: ${p.sku}` : '';
+        els.grid.appendChild(node);
+      }
+    }
+
+    function applyFilterSort(){
+      const q = els.search.value.trim().toLowerCase();
+      let list = lastFetched.slice();
+      if (q){ list = list.filter(p => (p.name||'').toLowerCase().includes(q)); }
+      switch(els.sort.value){
+        case 'name-asc': list.sort((a,b)=> (a.name||'').localeCompare(b.name||'')); break;
+        case 'name-desc': list.sort((a,b)=> (b.name||'').localeCompare(a.name||'')); break;
+        case 'price-asc': list.sort((a,b)=> Number(a.price||a.regular_price||0) - Number(b.price||b.regular_price||0)); break;
+        case 'price-desc': list.sort((a,b)=> Number(b.price||b.regular_price||0) - Number(a.price||a.regular_price||0)); break;
+      }
+      render(list);
+    }
+
+    async function fetchList(){
+      BASE_URL = (els.baseUrl.value || '').replace(/\/$/, '');
+      localStorage.setItem('wc_base_url', BASE_URL);
+      els.status.textContent = 'Loading…';
+      els.status.style.background = '#0e1524';
+      els.page.textContent = String(page);
+      perPage = Number(els.perPage.value || 12);
+      try{
+        const url = `${BASE_URL}/products?per_page=${encodeURIComponent(perPage)}&page=${encodeURIComponent(page)}`;
+        const res = await fetch(url);
+        if(!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        lastFetched = Array.isArray(data) ? data : (data?.data || []);
+        els.status.textContent = `OK · ${lastFetched.length} items`;
+        applyFilterSort();
+      }catch(err){
+        console.error(err);
+        els.status.textContent = 'Error';
+        els.status.style.background = '#220b0b';
+        lastFetched = [];
+        render(lastFetched);
+      }
+    }
+
+    async function fetchById(){
+      BASE_URL = (els.baseUrl.value || '').replace(/\/$/, '');
+      localStorage.setItem('wc_base_url', BASE_URL);
+      const id = (els.singleId.value || '').trim();
+      if(!id){ alert('Enter a product ID'); return; }
+      els.status.textContent = `Fetching #${id}…`;
+      try{
+        const res = await fetch(`${BASE_URL}/products/${encodeURIComponent(id)}`);
+        if(!res.ok) throw new Error(`HTTP ${res.status}`);
+        const product = await res.json();
+        lastFetched = [product];
+        els.page.textContent = '—';
+        render(lastFetched);
+        els.status.textContent = `OK · 1 item`;
+      }catch(err){
+        console.error(err);
+        els.status.textContent = 'Error';
+        els.status.style.background = '#220b0b';
+        lastFetched = [];
+        render(lastFetched);
+      }
+    }
+
+    // ---- Events ----
+    els.load.addEventListener('click', () => { page = 1; fetchList(); });
+    els.prev.addEventListener('click', () => { if(page>1){ page--; fetchList(); }});
+    els.next.addEventListener('click', () => { page++; fetchList(); });
+    els.perPage.addEventListener('change', () => { page = 1; fetchList(); });
+    els.search.addEventListener('input', applyFilterSort);
+    els.sort.addEventListener('change', applyFilterSort);
+    els.fetchById.addEventListener('click', fetchById);
+
+    // Optional: auto-load if BASE_URL preset
+    if (els.baseUrl.value){ fetchList(); }
+  </script>
+</body>
+</html>
