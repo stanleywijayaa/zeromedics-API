@@ -5,7 +5,7 @@ async function getAllOrder(){
     const woocommerce = new WooCommerceRestApi({
         url: 'https://zeromedics.com',
         consumerKey: process.env.CONSUMER_KEY,
-        consumerSecret: process.env.COSNUMER_SECRET,
+        consumerSecret: process.env.CONSUMER_SECRET,
         version: 'wc/v3'
     })
 
