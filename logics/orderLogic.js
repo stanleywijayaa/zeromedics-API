@@ -9,7 +9,22 @@ const woocommerce = new WooCommerceRestApi({
     })
 
 async function getAllOrder(){
-    console.log('getting all order from wc')
+    let page = 1
+    let orders = []
+    let data = []
+
+    do{
+        const res = await woocommerce.get('orders', {'per_page': 100, page})
+        data = res.data
+        orders = orders.concat(data)
+        page++
+    }
+    while (data.length === 100);
+
+    return orders
+}
+
+async function getRawOrders(){
     let page = 1
     let orders = []
     let data = []
@@ -26,9 +41,7 @@ async function getAllOrder(){
 }
 
 async function getOrder(query){
-    console.log('getting an order from wc')
-    console.log(query)
-    let orders = await getAllOrder()
+    let orders = await getRawOrders()
     let filteredOrder = orders.filter(order => {
         return (
             order.id == query ||
