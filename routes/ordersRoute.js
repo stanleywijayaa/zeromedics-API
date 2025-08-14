@@ -5,8 +5,13 @@ const router = express.Router()
 router.get('/search', async (req, res) => {
     const query = req.query.query
     if(!query){
-        console.log('getting all order')
-        getAllOrder()
+        try {
+            console.log('getting all order')
+            const order = await getAllOrder()
+            res.send(order)
+        } catch (error) {
+            res.status(500).json({ error: 'Failed to fetch order' });
+        }
     }
     else{
         try {

@@ -64,6 +64,7 @@
 
             try {
                 const res = await fetch(`/orders/search?query=${encodeURIComponent(query)}`);
+                console.log(await res.text())
                 if (!res.ok) throw new Error("No orders found");
 
                 const data = await res.json();
