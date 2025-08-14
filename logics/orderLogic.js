@@ -1,4 +1,4 @@
-const WooCommerceRestApi = require("@woocommerce/woocommerce-rest-api");
+const WooCommerceRestApi = require("@woocommerce/woocommerce-rest-api").default;
 require('dotenv').config()
 
 async function getAllOrder(){
@@ -24,7 +24,8 @@ async function getOrder(query){
     })
 
     let res = woocommerce.get('orders', query)
-
+    const order = res.data
+    return order
 }
 
 module.exports = {getAllOrder, getOrder}

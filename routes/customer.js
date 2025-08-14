@@ -5,7 +5,7 @@ const { createCustomer, getAllCustomers, getCustomer } = require('../logics/cust
 router.post('/', async(req,res) => {
     const customerData = req.body;
     try {
-        const newCustomer = await createCustomer(customerData);// need to create html & php to retrieve data from user
+        const newCustomer = await createCustomer(customerData);//need to create UI
         res.status(201).json(newCustomer);
     } catch (error) {
         res.status(500).json({ error: 'Failed to create customer' });
@@ -22,7 +22,7 @@ router.get('/all', async (req, res) => {
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/get', async (req, res) => {
     const { email, username } = req.body;
     try {
         const customer = await getCustomer(email, username);

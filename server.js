@@ -17,9 +17,8 @@ app.use('/products', require('./routes/product'));
 
 app.use('/orders', orderRoute);
 
-app.get('/zeromedics/orders', (req, res) => {
+app.get('/orders', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'SearchOrders.html'));
 });
-
 
 app.listen(PORT, () => {console.log(`Server is running on port ${PORT}`);});
