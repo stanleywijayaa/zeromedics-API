@@ -23,7 +23,7 @@ const createCustomer = async (data) => {
 // retrieve all customers
 const getAllCustomers = async () => {
     try {
-        const response = await api.get('customers');
+        const response = await api.get('customers?per_page=25&page=1');
         return response.data;
     }
     catch(error){
