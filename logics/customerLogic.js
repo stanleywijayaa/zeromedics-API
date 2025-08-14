@@ -10,6 +10,17 @@ const api = new WooCommerceAPI({
     version: 'wc/v3'
 });
 
+// create a new customer
+const createCustomer = async (data) => {
+    try{
+        const response = await api.post('customers', data);
+        return response.data;
+    }catch(error) {
+        console.error("Error creating customer: ", error);
+    }
+}
+
+// retrieve all customers
 const getAllCustomers = async () => {
     try {
         const response = await api.get('customers');
@@ -20,6 +31,7 @@ const getAllCustomers = async () => {
     }
 }
 
+// retrieve a customer by email or username
 const getCustomer = async (email, username) => {
     try{
         // Set filters based on provided parameters
@@ -37,6 +49,7 @@ const getCustomer = async (email, username) => {
 } 
 
 module.exports = {
+    createCustomer,
     getAllCustomers,
     getCustomer
 };
