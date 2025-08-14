@@ -11,7 +11,12 @@ document.getElementById('customerForm').addEventListener('submit', async functio
     e.preventDefault();
     const email = document.getElementById('email').value.trim();
     const username = document.getElementById('username').value.trim();
-
+    //empty search fields show all customers
+    if (!email && !username) {
+        currentPage = 1;
+        fetchCustomers(currentPage);
+        return;
+    }
     const response = await fetch(`http://localhost:3000/customer/get`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
