@@ -1,30 +1,114 @@
 <html>
-    <body>
-        <h1>Customer Search</h1>
-        <form id="customerForm">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username">
-            <input type="submit" value="Search Customer">
-            <button type="button" id="showAllBtn">Show All</button>
-        </form>
-        <br>
-        <table border="1" id="customerTable">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Username</th>
-                    <th>Email</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Customer rows will be inserted here -->
-            </tbody>
-        </table>
-        <div id="result"></div>
-        <script src="../scripts/customerGet.js"></script>
-    </body>
+<head>
+    <title>View Customers</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="email"], input[type="text"] {
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            flex: 1;
+            min-width: 150px;
+        }
+        input[type="submit"], button {
+            padding: 8px 15px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover, button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+        thead {
+            background-color: #007bff;
+            color: white;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        #pagination {
+            margin-top: 15px;
+            text-align: center;
+        }
+        #pagination button {
+            margin: 0 5px;
+            background-color: #007bff;
+        }
+        #pagination button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>Customer Search</h1>
+    <form id="customerForm">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username">
+        <input type="submit" value="Search Customer">
+        <button type="button" id="showAllBtn">Show All</button>
+    </form>
+    
+    <table id="customerTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Username</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Customer rows go here -->
+        </tbody>
+    </table>
+
+    <div id="pagination">
+        <button id="prevPage" disabled>Previous</button>
+        <span id="pageInfo"></span>
+        <button id="nextPage" disabled>Next</button>
+    </div>
+
+    <div id="result"></div>
+    <script src="../scripts/customerGet.js"></script>
+</body>
 </html>

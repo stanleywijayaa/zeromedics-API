@@ -21,15 +21,20 @@ const createCustomer = async (data) => {
 }
 
 // retrieve all customers
-const getAllCustomers = async () => {
+const getAllCustomers = async (page = 1, perPage = 25) => {
     try {
-        const response = await api.get('customers?per_page=25&page=1');
-        return response.data;
+        const response = await api.get(`customers?per_page=${perPage}&page=${page}`);
+
+        return {
+            customers: response.data, // array of customers for this page
+            total: parseInt(response.headers['x-wp-total']) || 0, // total customers
+            totalPages: parseInt(response.headers['x-wp-totalpages']) || 1 // total pages
+        };
+    } catch (error) {
+        console.error("Error fetching customers:", error);
+        throw error;
     }
-    catch(error){
-        console.error(error)
-    }
-}
+};
 
 // retrieve a customer by email or username
 const getCustomer = async (email, username) => {
