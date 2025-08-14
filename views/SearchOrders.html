@@ -1,44 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        .card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 10px 0;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            background: #fff;
-        }
-        .card h3 {
-            margin-top: 0;
-        }
-        .items {
-            margin-top: 5px;
-            padding-left: 20px;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            background: #f7f7f7;
-            padding: 20px;
-        }
-        .pagination {
-            margin-top: 15px;
-            display: flex;
-            gap: 5px;
-        }
-        .pagination button {
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            background: white;
-            cursor: pointer;
-        }
-        .pagination button.active {
-            background: #007bff;
-            color: white;
-            border-color: #007bff;
-        }
-    </style>
+    <link rel="stylesheet" href="/styles/orders.css">
 </head>
 <body>
     <h1>Order Search</h1>
@@ -53,66 +16,6 @@
 
     <div id="results"></div>
 
-    <script>
-        // Read URL param if present
-        const urlParams = new URLSearchParams(window.location.search);
-        const queryParam = urlParams.get("query");
-        if (queryParam) {
-            document.getElementById("query").value = queryParam;
-            fetchOrders(queryParam);
-        }
-
-        document.getElementById("searchForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-            const query = document.getElementById("query").value.trim();
-            if (query) {
-                // Change URL without reloading
-                window.history.pushState({}, "", `/orders?query=${encodeURIComponent(query)}`);
-                fetchOrders(query);
-            }
-            else{
-                fetchOrders(query);
-            }
-        });
-
-        async function fetchOrders(query) {
-            let fetchUrl = `/search/orders?query=${encodeURIComponent(query)}`
-            if (!query){
-                fetchUrl = `/search/orders/all`
-            }
-            const resultsDiv = document.getElementById("results");
-            resultsDiv.innerHTML = "Searching...";
-
-            try {
-                const res = await fetch(fetchUrl);
-
-                if (!res.ok || !res) {
-                    resultsDiv.innerHTML = "No order found";
-                    return;
-                }
-
-                const data = await res.json();
-                resultsDiv.innerHTML = "";
-
-                (Array.isArray(data) ? data : [data]).forEach(order => {
-                    const card = document.createElement("div");
-                    card.className = "card";
-                    card.innerHTML = `
-                        <h3>Order ID: ${order.id}</h3>
-                        <p><strong>Customer:</strong> ${order.billing.first_name + ' ' + order.billing.last_name}</p>
-                        <p><strong>Email:</strong> ${order.billing.email}</p>
-                        <p><strong>Items:</strong></p>
-                        <ul class="items">
-                            ${order.line_items.map(item => `<li>${item.name}</li>`).join("")}
-                        </ul>
-                    `;
-                    resultsDiv.appendChild(card);
-                });
-
-            } catch (err) {
-                resultsDiv.innerHTML = `<p style="color:red;">${err.message}</p>`;
-            }
-        }
-    </script>
+    <script src="./scripts/searchOrders.js"></script>
 </body>
 </html>
