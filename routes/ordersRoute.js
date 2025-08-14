@@ -10,6 +10,7 @@ router.get('/search', async (req, res) => {
             const order = await getAllOrder()
             res.send(order)
         } catch (error) {
+            console.log(error)
             res.status(500).json({ error: 'Failed to fetch order' });
         }
     }
@@ -19,6 +20,7 @@ router.get('/search', async (req, res) => {
             const order = await getOrder(query);
             res.send(order);
         } catch (error){
+            console.log(error)
             res.status(500).json({ error: 'Failed to fetch order' });
         }
     }
