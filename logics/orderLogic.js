@@ -1,10 +1,11 @@
-import WooCommerceRestApi from "@woocommerce/woocommerce-rest-api";
+const WooCommerceRestApi = require("@woocommerce/woocommerce-rest-api");
+require('dotenv').config()
 
-export async function getAllOrder(){
+async function getAllOrder(){
     const woocommerce = new WooCommerceRestApi({
         url: 'https://zeromedics.com',
-        consumerKey: consumer_key,
-        consumerSecret: consumer_secret,
+        consumerKey: process.env.CONSUMER_KEY,
+        consumerSecret: process.env.COSNUMER_SECRET,
         version: 'wc/v3'
     })
 
@@ -13,6 +14,16 @@ export async function getAllOrder(){
     return order
 }
 
-export async function getOrder(query){
+async function getOrder(query){
+    const woocommerce = new WooCommerceRestApi({
+        url: 'https://zeromedics.com',
+        consumerKey: process.env.CONSUMER_KEY,
+        consumerSecret: process.env.COSNUMER_SECRET,
+        version: 'wc/v3'
+    })
+
+    let res = woocommerce.get('orders', query)
 
 }
+
+module.exports = {getAllOrder, getOrder}
