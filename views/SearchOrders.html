@@ -49,7 +49,11 @@
             const query = document.getElementById("query").value.trim();
             if (query) {
                 // Change URL without reloading
-                window.history.pushState({}, "", `/search?query=${encodeURIComponent(query)}`);
+                window.history.pushState({}, "", `/orders/search?query=${encodeURIComponent(query)}`);
+                fetchOrders(query);
+            }
+            else{
+                window.history.pushState({}, "", `/orders/search`);
                 fetchOrders(query);
             }
         });
@@ -59,7 +63,7 @@
             resultsDiv.innerHTML = "Searching...";
 
             try {
-                const res = await fetch(`/search?query=${encodeURIComponent(query)}`);
+                const res = await fetch(`/orders/search?query=${encodeURIComponent(query)}`);
                 if (!res.ok) throw new Error("No orders found");
 
                 const data = await res.json();

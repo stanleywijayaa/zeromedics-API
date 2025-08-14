@@ -15,6 +15,7 @@ async function getAllOrder(){
 }
 
 async function getOrder(query){
+    console.log(query)
     const woocommerce = new WooCommerceRestApi({
         url: 'https://zeromedics.com',
         consumerKey: process.env.CONSUMER_KEY,
