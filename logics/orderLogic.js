@@ -28,9 +28,17 @@ async function getAllOrder(){
 async function getOrder(query){
     console.log('getting an order from wc')
     console.log(query)
-    let res = await woocommerce.get('orders', {'search': query})    
-    const order = res.data
-    return order
+    let orders = await getAllOrder()
+    let filteredOrder = orders.filter(order => {
+        return (
+            order.id == query ||
+            order.customer_id == query ||
+            order.billing.first_name.includes(query) ||
+            order.billing.last_name.includes(query) ||
+            order.billing.email.includes(query)
+        )
+    })
+    return filteredOrder
 }
 
 module.exports = {getAllOrder, getOrder}
