@@ -26,7 +26,7 @@ const getProducts = async (req, res) => {
         res.json(response.data);
     }
     catch (error) {
-        console.error("Error fetching customer:", error);
+        console.error("Error fetching products:", error);
         throw error;
     }
 } 
