@@ -9,7 +9,7 @@ app.use(express.json())
 app.use(cors())
 
 // routes
-const customerRoute = require('./routes/customer');
+const customerRoute = require('./routes/customersRoute');
 const orderRoute = require('./routes/ordersRoute')
 
 //static routes
