@@ -1,11 +1,19 @@
 // Read URL param if present
 const urlParams = new URLSearchParams(window.location.search);
 const queryParam = urlParams.get("query");
+const perPageParam = urlParams.get("per_page");
+let orders = []
+let currentPage = 1
+let per_page = document.getElementById("per_page").value
 
 //Directly fetch data when there is query in the url
 if (queryParam) {
     document.getElementById("query").value = queryParam;
     fetchOrders(queryParam);
+}
+if (perPageParam) {
+    document.getElementById("per_page").value = perPageParam;
+    per_page = perPageParam
 }
 
 //Search button event handler
@@ -53,7 +61,7 @@ async function fetchOrders(query) {
 
         //Retrieve the data into json
         const data = await res.json();
-        const orders = data.order
+        orders = data.orders
         const totalPage = data.page
         resultsDiv.innerHTML = "";
 
@@ -73,7 +81,7 @@ function renderPage(currentPage) {
 
     const start = (currentPage - 1) * per_page;
     const end = start + per_page;
-    const pageItems = allData.slice(start, end);
+    const pageItems = orders.slice(start, end);
 
     pageItems.forEach(order => {
         const card = document.createElement("div");

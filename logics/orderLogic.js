@@ -11,8 +11,8 @@ const woocommerce = new WooCommerceRestApi({
 
 //Get all orders and create pagination
 async function getAllOrder(){
-    let { orders, page } = getRawOrders()
-    return { orders, page }
+    let { orders, page } = await getRawOrders()
+    return ({ orders, page })
 }
 
 //Get all orders from WooCommerce
@@ -31,7 +31,7 @@ async function getRawOrders(){
     while (data.length === 100);
     page--
 
-    return { orders, page }
+    return ({ orders, page })
 }
 
 //Filter the orders according to the query
@@ -46,12 +46,8 @@ async function getOrder(query){
             order.billing.email.includes(query)
         )
     })
-    return { filteredOrder, page }
-}
-
-//Get the number of pages
-async function getTotalPage(per_page){
-
+    orders = filteredOrder
+    return ({ orders, page })
 }
 
 module.exports = {getAllOrder, getOrder}
