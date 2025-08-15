@@ -39,7 +39,7 @@ const getAllCustomers = async (page = 1, perPage = 20) => {
 // retrieve a customer by email or username
 const getCustomer = async (email, username) => {
     try{
-        // Set filters based on provided parameters
+        //set filters based on provided parameters
         const params = {};
         if (email) params.email = email;
         if (username) params.search = username;
@@ -53,8 +53,43 @@ const getCustomer = async (email, username) => {
     }
 } 
 
+//update a customer
+const updateCustomer = async (email, data) => {
+    try{
+        //retrieve customer by email
+        const customer = await getCustomer(email);
+        if (!customer || customer.length === 0) {
+            throw new Error("Customer not found");
+        }
+        //store the customer ID then update with provided data
+        const customerId = customer[0].id;
+        const response = await api.put(`customers/${customerId}`, data);
+        return response.data;
+    }catch(error){
+        console.error("error updating a customer: ", error);
+    }
+}
+// delete a customer
+const deleteCustomer = async (email) => {
+    try{
+        //retrieve customer by email
+        const customer = await getCustomer(email);
+        if (!customer || customer.length === 0) {
+            throw new Error("Customer not found");
+        }
+        //store the customer ID then delete respective customer
+        const customerId = customer[0].id;
+        const response = await api.delete(`customers/${customerId}`, { force: true });
+        return response.data;
+    }catch(error){
+        console.error("error deleting a customer: ", error);
+    }
+}
+
 module.exports = {
     createCustomer,
     getAllCustomers,
-    getCustomer
+    getCustomer,
+    updateCustomer,
+    deleteCustomer
 };
