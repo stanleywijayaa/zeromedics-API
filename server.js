@@ -19,8 +19,8 @@ app.use('/customer', customerRoute);
 app.use('/products', require('./routes/product'));
 
 //Orders routing
-app.use('/search/orders', orderRoute);
-app.get('/orders', (req, res) => {
+app.use('/orders', orderRoute);
+app.get('/search/orders', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'SearchOrders.html'));
 });
 

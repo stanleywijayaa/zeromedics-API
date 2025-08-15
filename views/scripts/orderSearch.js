@@ -16,7 +16,7 @@ document.getElementById("searchForm").addEventListener("submit", function (e) {
     //Change the url
     if (query) {
         // Change URL without reloading
-        window.history.pushState({}, "", `/orders?query=${encodeURIComponent(query)}`);
+        window.history.pushState({}, "", `/search/orders?query=${encodeURIComponent(query)}`);
         fetchOrders(query);
     }
     //Dont change the url when showing all orders
@@ -28,10 +28,10 @@ document.getElementById("searchForm").addEventListener("submit", function (e) {
 //Fetch the orders
 async function fetchOrders(query) {
     //Assign the url with query
-    let fetchUrl = `/search/orders?query=${encodeURIComponent(query)}`
+    let fetchUrl = `/orders?query=${encodeURIComponent(query)}`
     //Fetch all orders when the query is empty
     if (!query) {
-        fetchUrl = `/search/orders/all`
+        fetchUrl = `/orders/all`
     }
 
     const resultsDiv = document.getElementById("results");
