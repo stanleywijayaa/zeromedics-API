@@ -20,6 +20,7 @@ app.use('/products', require('./routes/productRoute'));
 
 //Orders routing
 app.use('/orders', orderRoute);
+//Route to orders homepage
 app.get('/search/orders', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'SearchOrders.html'));
 });

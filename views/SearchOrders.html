@@ -4,7 +4,10 @@
     <link rel="stylesheet" href="/styles/orders.css">
 </head>
 <body>
-    <h1>Order Search</h1>
+    <div class="header">
+        <h1>Order Search</h1>
+        <button id="exportBtn">Export to Nocobase</button>
+    </div>
     <form id="searchForm" method="GET">
         <label for="query">Search:</label>
         <input type="text" id="query" name="query" style="width: 50%;">
@@ -23,5 +26,6 @@
     <div id="pagination_bot" class="pagination"></div>
 
     <script src="/scripts/orderSearch.js"></script>
+    <script src="/scripts/orderExport.js"></script>
 </body>
 </html>

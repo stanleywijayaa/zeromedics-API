@@ -68,6 +68,9 @@ async function fetchOrders(query) {
         renderPage(currentPage)
         renderPagination(currentPage)
         loader.classList.add("hidden");
+        if (orders.length > 0){
+            document.getElementById("exportBtn").disabled = false
+        }
     } catch (err) {
         resultsDiv.innerHTML = `<p style="color:red;">${err.message}</p>`;
     }
