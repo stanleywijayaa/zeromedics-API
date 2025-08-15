@@ -46,7 +46,7 @@ async function getOrder(query){
             order.billing.email.includes(query)
         )
     })
-    return filteredOrder
+    return { filteredOrder, page }
 }
 
 //Get the number of pages

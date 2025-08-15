@@ -35,8 +35,11 @@ async function fetchOrders(query) {
     }
 
     const resultsDiv = document.getElementById("results");
+    const paginationDiv = document.getElementById("pagination")
+    const currentPage = 1
     //Show searching text
     resultsDiv.innerHTML = "Searching...";
+    paginationDiv.innerHTML = ""
 
     try {
         //Get the order list
@@ -50,25 +53,57 @@ async function fetchOrders(query) {
 
         //Retrieve the data into json
         const data = await res.json();
+        const orders = data.order
+        const totalPage = data.page
         resultsDiv.innerHTML = "";
 
-        //Iterate through the order list and make html format
-        (Array.isArray(data) ? data : [data]).forEach(order => {
-            const card = document.createElement("div");
-            card.className = "card";
-            card.innerHTML = `
-                        <h3>Order ID: ${order.id}</h3>
-                        <p><strong>Customer:</strong> ${order.billing.first_name + ' ' + order.billing.last_name}</p>
-                        <p><strong>Email:</strong> ${order.billing.email}</p>
-                        <p><strong>Items:</strong></p>
-                        <ul class="items">
-                            ${order.line_items.map(item => `<li>${item.name}</li>`).join("")}
-                        </ul>
-                    `;
-            resultsDiv.appendChild(card);
-        });
-
+        //Iterate through the order list and output html list
+        Array.isArray(orders) ? orders : [orders];
+        renderPage(currentPage)
+        renderPagination(totalPage, currentPage)
     } catch (err) {
         resultsDiv.innerHTML = `<p style="color:red;">${err.message}</p>`;
+    }
+}
+
+function renderPage(currentPage) {
+    const per_page = document.getElementById("per_page").value
+    const resultsDiv = document.getElementById("results");
+    resultsDiv.innerHTML = "";
+
+    const start = (currentPage - 1) * per_page;
+    const end = start + per_page;
+    const pageItems = allData.slice(start, end);
+
+    pageItems.forEach(order => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+            <h3>Order ID: ${order.id}</h3>
+            <p><strong>Customer:</strong> ${order.billing.first_name + ' ' + order.billing.last_name}</p>
+            <p><strong>Email:</strong> ${order.billing.email}</p>
+            <p><strong>Items:</strong></p>
+            <ul class="items">
+                ${order.line_items.map(item => `<li>${item.name}</li>`).join("")}
+            </ul>
+        `;
+        resultsDiv.appendChild(card);
+    });
+}
+
+function renderPagination(totalPages, currentPage) {
+    const paginationDiv = document.getElementById("pagination");
+    paginationDiv.innerHTML = "";
+
+    for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i;
+        btn.className = i === currentPage ? "active" : "";
+        btn.addEventListener("click", () => {
+            currentPage = i;
+            renderPage(currentPage);
+            renderPagination(totalPages, currentPage);
+        });
+        paginationDiv.appendChild(btn);
     }
 }
