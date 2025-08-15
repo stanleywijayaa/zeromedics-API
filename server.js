@@ -16,7 +16,7 @@ const orderRoute = require('./routes/ordersRoute')
 app.use(express.static(path.join(__dirname, 'views')))
 
 app.use('/customer', customerRoute);
-app.use('/products', require('./routes/product'));
+app.use('/products', require('./routes/productRoute'));
 
 //Orders routing
 app.use('/orders', orderRoute);
