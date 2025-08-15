@@ -11,8 +11,8 @@ const woocommerce = new WooCommerceRestApi({
 
 //Get all orders and create pagination
 async function getAllOrder(){
-    let { orders, page } = await getRawOrders()
-    return ({ orders, page })
+    let { orders } = await getRawOrders()
+    return ({ orders })
 }
 
 //Get all orders from WooCommerce
@@ -31,12 +31,12 @@ async function getRawOrders(){
     while (data.length === 100);
     page--
 
-    return ({ orders, page })
+    return ({ orders })
 }
 
 //Filter the orders according to the query
 async function getOrder(query){
-    let {orders, page} = await getRawOrders()
+    let {orders} = await getRawOrders()
     let filteredOrder = orders.filter(order => {
         return (
             order.id == query ||
@@ -47,7 +47,7 @@ async function getOrder(query){
         )
     })
     orders = filteredOrder
-    return ({ orders, page })
+    return ({ orders })
 }
 
 module.exports = {getAllOrder, getOrder}

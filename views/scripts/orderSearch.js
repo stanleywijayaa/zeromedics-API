@@ -4,7 +4,7 @@ const queryParam = urlParams.get("query");
 const perPageParam = urlParams.get("per_page");
 let orders = []
 let currentPage = 1
-let per_page = document.getElementById("per_page").value
+let perPage = document.getElementById("per_page").value
 
 //Directly fetch data when there is query in the url
 if (queryParam) {
@@ -13,7 +13,7 @@ if (queryParam) {
 }
 if (perPageParam) {
     document.getElementById("per_page").value = perPageParam;
-    per_page = perPageParam
+    perPage = perPageParam
 }
 
 //Search button event handler
@@ -43,11 +43,10 @@ async function fetchOrders(query) {
     }
 
     const resultsDiv = document.getElementById("results");
-    const paginationDiv = document.getElementById("pagination")
     const currentPage = 1
     //Show searching text
-    resultsDiv.innerHTML = "Searching...";
-    paginationDiv.innerHTML = ""
+    const loader = document.getElementById("loader");
+    loader.classList.remove("hidden"); // show loader
 
     try {
         //Get the order list
@@ -62,20 +61,20 @@ async function fetchOrders(query) {
         //Retrieve the data into json
         const data = await res.json();
         orders = data.orders
-        const totalPage = data.page
         resultsDiv.innerHTML = "";
 
         //Iterate through the order list and output html list
         Array.isArray(orders) ? orders : [orders];
         renderPage(currentPage)
-        renderPagination(totalPage, currentPage)
+        renderPagination(currentPage)
+        loader.classList.add("hidden");
     } catch (err) {
         resultsDiv.innerHTML = `<p style="color:red;">${err.message}</p>`;
     }
 }
 
 function renderPage(currentPage) {
-    const per_page = document.getElementById("per_page").value
+    const per_page = parseInt(document.getElementById("per_page").value, 10); // force number
     const resultsDiv = document.getElementById("results");
     resultsDiv.innerHTML = "";
 
@@ -88,7 +87,7 @@ function renderPage(currentPage) {
         card.className = "card";
         card.innerHTML = `
             <h3>Order ID: ${order.id}</h3>
-            <p><strong>Customer:</strong> ${order.billing.first_name + ' ' + order.billing.last_name}</p>
+            <p><strong>Customer:</strong> ${order.billing.first_name} ${order.billing.last_name}</p>
             <p><strong>Email:</strong> ${order.billing.email}</p>
             <p><strong>Items:</strong></p>
             <ul class="items">
@@ -97,21 +96,69 @@ function renderPage(currentPage) {
         `;
         resultsDiv.appendChild(card);
     });
+
+    renderPagination(currentPage, per_page); // keep pagination in sync
 }
 
-function renderPagination(totalPages, currentPage) {
+function renderPagination(currentPage, per_page) {
     const paginationDiv = document.getElementById("pagination");
+    const paginationDiv2 = document.getElementById("pagination_bot");
     paginationDiv.innerHTML = "";
+    paginationDiv2.innerHTML = "";
+    const totalPages = Math.ceil(orders.length / per_page);
 
-    for (let i = 1; i <= totalPages; i++) {
+    const createButton = (label, page, disabled = false, active = false) => {
         const btn = document.createElement("button");
-        btn.textContent = i;
-        btn.className = i === currentPage ? "active" : "";
-        btn.addEventListener("click", () => {
-            currentPage = i;
-            renderPage(currentPage);
-            renderPagination(totalPages, currentPage);
-        });
-        paginationDiv.appendChild(btn);
+        btn.textContent = label;
+        if (active) btn.classList.add("active");
+        if (disabled) btn.disabled = true;
+        btn.addEventListener("click", () => renderPage(page));
+        return btn;
+    };
+
+    // Prev button
+    paginationDiv.appendChild(createButton("Prev", currentPage - 1, currentPage === 1));
+    paginationDiv2.appendChild(createButton("Prev", currentPage - 1, currentPage === 1));
+
+    // Calculate start/end range for page numbers
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, currentPage + 2);
+
+    // Always show first page + ellipses if needed
+    if (startPage > 1) {
+        paginationDiv.appendChild(createButton(1, 1, false, currentPage === 1));
+        paginationDiv2.appendChild(createButton(1, 1, false, currentPage === 1));
+        if (startPage > 2) {
+            const dots = document.createElement("span");
+            dots.textContent = "...";
+            paginationDiv.appendChild(dots);
+            const dots2 = document.createElement("span");
+            dots2.textContent = "...";
+            paginationDiv2.appendChild(dots2);
+        }
     }
+
+    // Middle page numbers
+    for (let i = startPage; i <= endPage; i++) {
+        paginationDiv.appendChild(createButton(i, i, false, i === currentPage));
+        paginationDiv2.appendChild(createButton(i, i, false, i === currentPage));
+    }
+
+    // Always show last page + ellipses if needed
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            const dots = document.createElement("span");
+            dots.textContent = "...";
+            paginationDiv.appendChild(dots);
+            const dots2 = document.createElement("span");
+            dots2.textContent = "...";
+            paginationDiv2.appendChild(dots2);
+        }
+        paginationDiv.appendChild(createButton(totalPages, totalPages, false, currentPage === totalPages));
+        paginationDiv2.appendChild(createButton(totalPages, totalPages, false, currentPage === totalPages));
+    }
+
+    // Next button
+    paginationDiv.appendChild(createButton("Next", currentPage + 1, currentPage === totalPages));
+    paginationDiv2.appendChild(createButton("Next", currentPage + 1, currentPage === totalPages));
 }

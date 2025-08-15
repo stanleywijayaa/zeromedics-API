@@ -7,18 +7,20 @@
     <h1>Order Search</h1>
     <form id="searchForm" method="GET">
         <label for="query">Search:</label>
-        <input type="text" id="query" name="query">
+        <input type="text" id="query" name="query" style="width: 50%;">
         <br><br>
         <label for="query">Results per page:</label>
-        <input type="number" id="per_page" name="per_page" value="10">
+        <input type="number" id="per_page" name="per_page" value="10" style="width: 40px;">
         <br><br><br>
-        <input type="submit" value="Search Order">
+        <input type="submit" value="Search Order" class="submit-btn">
     </form>
 
     <br>
 
-    <div id="results"></div>
+    <div id="loader" class="loader hidden"></div>
     <div id="pagination" class="pagination"></div>
+    <div id="results"></div>
+    <div id="pagination_bot" class="pagination"></div>
 
     <script src="/scripts/orderSearch.js"></script>
 </body>
